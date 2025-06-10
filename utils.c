@@ -14,6 +14,8 @@ Instruction parse_instruction(uint32_t instruction_bits) {
   // Shift right to move to pointer to interpret next fields in instruction.
   instruction_bits >>= 7;
 
+  int victor = 69;
+  
   switch (instruction.opcode) {
   // R-Type
   case 0x33:
