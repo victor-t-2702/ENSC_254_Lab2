@@ -218,8 +218,8 @@ void print_itype_except_load(char *name, Instruction instruction, int imm) {
 }
 
 void print_load(char *name, Instruction instruction) {
-    printf(ITYPE_FORMAT, name, instruction.itype.rd, instruction.itype.rs1,
-    instruction.itype.imm);
+    printf(MEM_FORMAT, name, instruction.itype.rd, sign_extend_number(instruction.itype.imm, 12), 
+    instruction.itype.rs1);
 }
 
 void print_store(char *name, Instruction instruction) {
@@ -232,7 +232,7 @@ void print_branch(char *name, Instruction instruction) {
 }
 
 void print_lui(Instruction instruction) {
-    printf(LUI_FORMAT, "lui", instruction.utype.rd, instruction.utype.imm);
+    //printf(LUI_FORMAT, "lui", instruction.utype.rd, instruction.utype.imm);
 }
 
 void print_jal(Instruction instruction) {

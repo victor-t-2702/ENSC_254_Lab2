@@ -129,22 +129,25 @@ int sign_extend_number(unsigned int field, unsigned int n) {
 /* Return the number of bytes (from the current PC) to the branch label using
  * the given branch instruction */
 int get_branch_offset(Instruction instruction) {
-  int twelve = (instruction.sbtype.imm7 & (1U << 6)) << 5;
-  int eleven = (instruction.sbtype.imm5 & 1U) << 10;
-  int ten_to_five = (instruction.sbtype.imm7 & ((1U << 6) - 1)) << 5;
-  int four_to_one = (instruction.sbtype.imm5 & 0b11110);
-  int output = twelve | eleven | ten_to_five | four_to_one;
-  return sign_extend_number(output, 21);
+
+  int twelve = (instruction.sbtype.imm7 >> 6) & 1U;     
+  int eleven = (instruction.sbtype.imm5 >> 0) & 1U;     
+  int ten_to_five = instruction.sbtype.imm7 & 0x3F;         
+  int four_to_one = (instruction.sbtype.imm5 >> 1) & 0xF;    
+
+  int offset = (twelve << 12) | (eleven << 11) | (ten_to_five << 5) | (four_to_one << 1);
+
+  return sign_extend_number(offset, 13);
 }
 
 /* Returns the number of bytes (from the current PC) to the jump label using the
  * given jump instruction */
 int get_jump_offset(Instruction instruction) {
-  int twenty = instruction.ujtype.imm & (1U << 20);
-  int nineteen_to_twelve = (instruction.ujtype.imm & 0b11111111) << 12;
-  int eleven = (instruction.ujtype.imm & (1U << 8)) << 3;
-  int ten_to_one = (instruction.ujtype.imm & (0x3FF << 9)) >> 8;
-  int output = twenty | nineteen_to_twelve | eleven | ten_to_one;
+  int twenty = (instruction.ujtype.imm >> 19) & 1U;
+  int nineteen_to_twelve = instruction.ujtype.imm & 0xFF;
+  int eleven = (instruction.ujtype.imm >> 8) & 1U;
+  int ten_to_one = (instruction.ujtype.imm >> 9) & 0x3FF;
+  int output = (twenty << 20) | (nineteen_to_twelve << 12) | (eleven << 11) | (ten_to_one << 1);
   return sign_extend_number(output, 21);
 }
 
