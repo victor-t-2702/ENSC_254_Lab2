@@ -156,9 +156,46 @@ void write_rtype(Instruction instruction) {
 }
 
 void write_itype_except_load(Instruction instruction) {
+    int immShifted = (instruction.itype.imm >> 5);
+    int imm11_5 = immShifted & ((1U << 7) - 1);
+    int immForSRAIandSRLI = instruction.itype.imm & ((1U << 5) - 1);
     switch (instruction.itype.funct3) {
-      /* YOUR CODE HERE */
-      /* call print_itype_except_load */
+        case 0x0:
+            print_itype_except_load("addi", instruction, instruction.itype.imm);
+            break;
+        
+        case 0x1:
+            print_itype_except_load("slli", instruction, instruction.itype.imm);
+            break;
+
+        case 0x2:
+            print_itype_except_load("slti", instruction, instruction.itype.imm);
+            break;
+
+        case 0x4:
+            print_itype_except_load("xori", instruction, instruction.itype.imm);
+            break;
+
+        case 0x5:
+            switch (imm11_5) {
+                case 0x00:                
+                    print_itype_except_load("srli", instruction, immForSRAIandSRLI);
+                    break;
+
+                case 0x20:                
+                    print_itype_except_load("srai", instruction, immForSRAIandSRLI);
+                    break;
+            }
+            break;
+
+        case 0x6:
+            print_itype_except_load("ori", instruction, instruction.itype.imm);
+            break;
+
+        case 0x7:
+            print_itype_except_load("andi", instruction, instruction.itype.imm);
+            break;
+    
         default:
             handle_invalid_instruction(instruction);
             break;  
@@ -185,8 +222,15 @@ void write_load(Instruction instruction) {
 
 void write_store(Instruction instruction) {
     switch (instruction.stype.funct3) {
-      /* YOUR CODE HERE */
-      /* call print_store */
+        case 0x0:
+            print_store("sb", instruction);
+            break;
+        case 0x1:
+            print_store("sh", instruction);
+            break;
+        case 0x2:
+            print_store("sw", instruction);
+            break;
         default:
             handle_invalid_instruction(instruction);
             break;
@@ -214,7 +258,7 @@ void print_rtype(char *name, Instruction instruction) {
 }
 
 void print_itype_except_load(char *name, Instruction instruction, int imm) {
-    printf(ITYPE_FORMAT, name, instruction.itype.rd, instruction.itype.rs1, instruction.itype.imm);
+    printf(ITYPE_FORMAT, name, instruction.itype.rd, instruction.itype.rs1, sign_extend_number(imm, 12));
 }
 
 void print_load(char *name, Instruction instruction) {
@@ -232,7 +276,7 @@ void print_branch(char *name, Instruction instruction) {
 }
 
 void print_lui(Instruction instruction) {
-    printf(LUI_FORMAT, "lui", instruction.utype.rd, instruction.utype.imm);
+    printf(LUI_FORMAT, instruction.utype.rd, instruction.utype.imm);
 }
 
 void print_jal(Instruction instruction) {
