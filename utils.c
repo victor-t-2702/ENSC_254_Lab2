@@ -140,10 +140,10 @@ int get_branch_offset(Instruction instruction) {
 /* Returns the number of bytes (from the current PC) to the jump label using the
  * given jump instruction */
 int get_jump_offset(Instruction instruction) {
-  int twenty = instruction.ujtype.imm & (1U << 19);
-  int nineteen_to_twelve = (instruction.ujtype.imm & 0b11111111) << 11;
-  int eleven = (instruction.ujtype.imm & (1U << 8)) << 2;
-  int ten_to_one = (instruction.ujtype.imm & (0x3FF << 9)) >> 9;
+  int twenty = instruction.ujtype.imm & (1U << 20);
+  int nineteen_to_twelve = (instruction.ujtype.imm & 0b11111111) << 12;
+  int eleven = (instruction.ujtype.imm & (1U << 8)) << 3;
+  int ten_to_one = (instruction.ujtype.imm & (0x3FF << 9)) >> 8;
   int output = twenty | nineteen_to_twelve | eleven | ten_to_one;
   return output;
 }
