@@ -87,19 +87,23 @@ int sign_extend_number(unsigned int field, unsigned int n) {
 /* Return the number of bytes (from the current PC) to the branch label using
  * the given branch instruction */
 int get_branch_offset(Instruction instruction) {
-  int twelve = (instruction.sbtype.imm7 & (1U < 6)) << 5;
+  int twelve = (instruction.sbtype.imm7 & (1U << 6)) << 5;
   int eleven = (instruction.sbtype.imm5 & 1U) << 10;
-  int ten_to_five = (instruction.sbtype.imm7 & 111111U) << 5;
-  int four_to_one = (instruction.sbtype.imm5 & 1111U << 1) >> 1;
-
-  return 0;
+  int ten_to_five = (instruction.sbtype.imm7 & ((1U << 6) - 1)) << 5;
+  int four_to_one = (instruction.sbtype.imm5 & 0b11110);
+  int output = twelve | eleven | ten_to_five | four_to_one;
+  return output;
 }
 
 /* Returns the number of bytes (from the current PC) to the jump label using the
  * given jump instruction */
 int get_jump_offset(Instruction instruction) {
-  /* YOUR CODE HERE */
-  return 0;
+  int twenty = instruction.ujtype.imm & (1U << 19);
+  int nineteen_to_twelve = (instruction.ujtype.imm & 0b11111111) << 11;
+  int eleven = (instruction.ujtype.imm & (1U << 8)) << 2;
+  int ten_to_one = (instruction.ujtype.imm & (0x3FF << 9)) >> 9;
+  int output = twenty | nineteen_to_twelve | eleven | ten_to_one;
+  return output;
 }
 
 /* Returns the number of bytes (from the current PC) to the base address using the
