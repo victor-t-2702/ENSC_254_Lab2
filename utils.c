@@ -13,8 +13,6 @@ Instruction parse_instruction(uint32_t instruction_bits) {
 
   // Shift right to move to pointer to interpret next fields in instruction.
   instruction_bits >>= 7;
-
-  int victor = 69;
   
   switch (instruction.opcode) {
   // R-Type
@@ -57,8 +55,10 @@ Instruction parse_instruction(uint32_t instruction_bits) {
 /* Sign extends the given field to a 32-bit integer where field is
  * interpreted an n-bit integer. */
 int sign_extend_number(unsigned int field, unsigned int n) {
-  /* YOUR CODE HERE */
-  return 0;
+  int shift = 32-n;
+  int extendedNum = field << shift;
+  extendedNum = extendedNum >> shift;
+  return extendedNum;
 }
 
 /* Return the number of bytes (from the current PC) to the branch label using
