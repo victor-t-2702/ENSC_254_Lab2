@@ -134,7 +134,7 @@ int get_branch_offset(Instruction instruction) {
   int ten_to_five = (instruction.sbtype.imm7 & ((1U << 6) - 1)) << 5;
   int four_to_one = (instruction.sbtype.imm5 & 0b11110);
   int output = twelve | eleven | ten_to_five | four_to_one;
-  return output;
+  return sign_extend_number(output, 21);
 }
 
 /* Returns the number of bytes (from the current PC) to the jump label using the
@@ -145,7 +145,7 @@ int get_jump_offset(Instruction instruction) {
   int eleven = (instruction.ujtype.imm & (1U << 8)) << 3;
   int ten_to_one = (instruction.ujtype.imm & (0x3FF << 9)) >> 8;
   int output = twenty | nineteen_to_twelve | eleven | ten_to_one;
-  return output;
+  return sign_extend_number(output, 21);
 }
 
 /* Returns the number of bytes (from the current PC) to the base address using the
