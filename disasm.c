@@ -214,7 +214,7 @@ void print_rtype(char *name, Instruction instruction) {
 }
 
 void print_itype_except_load(char *name, Instruction instruction, int imm) {
-    /* YOUR CODE HERE */
+    printf(ITYPE_FORMAT, name, instruction.itype.rd, instruction.itype.rs1, instruction.itype.imm);
 }
 
 void print_load(char *name, Instruction instruction) {
@@ -223,7 +223,7 @@ void print_load(char *name, Instruction instruction) {
 }
 
 void print_store(char *name, Instruction instruction) {
-    /* YOUR CODE HERE */
+    printf(MEM_FORMAT, name, instruction.stype.rs2, get_store_offset(instruction), instruction.stype.rs1);
 }
 
 void print_branch(char *name, Instruction instruction) {
@@ -232,7 +232,7 @@ void print_branch(char *name, Instruction instruction) {
 }
 
 void print_lui(Instruction instruction) {
-    /* YOUR CODE HERE */
+    printf(LUI_FORMAT, "lui", instruction.utype.rd, instruction.utype.imm);
 }
 
 void print_jal(Instruction instruction) {
@@ -240,5 +240,5 @@ void print_jal(Instruction instruction) {
 }
 
 void print_ecall(Instruction instruction) {
-    /* YOUR CODE HERE */
+    printf(ECALL_FORMAT);
 }
