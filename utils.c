@@ -14,6 +14,7 @@ Instruction parse_instruction(uint32_t instruction_bits) {
   // Shift right to move to pointer to interpret next fields in instruction.
   instruction_bits >>= 7;
   
+  
   switch (instruction.opcode) {
   // R-Type
   case 0x33:
@@ -37,7 +38,29 @@ Instruction parse_instruction(uint32_t instruction_bits) {
     instruction.rtype.funct7 = instruction_bits & ((1U << 7) - 1);
     break;
   // cases for other types of instructions
-  /* YOUR CODE HERE */
+  //SB-Type
+  case 0x63:
+    instruction.sbtype.imm5 = instruction_bits & ((1U << 5) - 1);
+    instruction_bits >>= 5;
+
+    instruction.sbtype.funct3 = instruction_bits & ((1U << 3) - 1);
+    instruction_bits >>= 3;
+
+    instruction.sbtype.rs1 = instruction_bits & ((1U << 5) - 1);
+    instruction_bits >>= 5;
+
+    instruction.sbtype.rs2 = instruction_bits & ((1U << 5) - 1);
+    instruction_bits >>= 5;
+
+    // funct7: 0000 000
+    instruction.sbtype.imm7 = instruction_bits & ((1U << 7) - 1);
+    break;
+  case 0x6F:
+    instruction.ujtype.rd = instruction_bits & ((1U << 5) - 1);
+    instruction_bits >>= 5;
+
+    instruction.ujtype.imm = instruction_bits & ((1U << 20) - 1);
+    break;
 
   #ifndef TESTING
   default:
@@ -64,7 +87,11 @@ int sign_extend_number(unsigned int field, unsigned int n) {
 /* Return the number of bytes (from the current PC) to the branch label using
  * the given branch instruction */
 int get_branch_offset(Instruction instruction) {
-  /* YOUR CODE HERE */
+  int twelve = (instruction.sbtype.imm7 & (1U < 6)) << 5;
+  int eleven = (instruction.sbtype.imm5 & 1U) << 10;
+  int ten_to_five = (instruction.sbtype.imm7 & 111111U) << 5;
+  int four_to_one = (instruction.sbtype.imm5 & 1111U << 1) >> 1;
+
   return 0;
 }
 
