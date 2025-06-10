@@ -156,7 +156,7 @@ int get_jump_offset(Instruction instruction) {
 int get_store_offset(Instruction instruction) {
   int eleven_to_five = instruction.stype.imm7 << 5;
   int output = eleven_to_five | instruction.stype.imm5;
-  return output;
+  return sign_extend_number(output, 12);
 }
 /************************Helper functions************************/
 
