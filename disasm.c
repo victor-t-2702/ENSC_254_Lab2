@@ -74,13 +74,13 @@ void write_rtype(Instruction instruction) {
         case 0x01:
             switch (instruction.rtype.funct7) {
                 case 0x0:
-		            print_rtype("sll", instruction);
+		            print_rtype("sll", instruction); // Use print function to print instruction with desired name
                     break;
                 case 0x1:
                     print_rtype("mulh", instruction);
                     break;
                 default:
-                    handle_invalid_instruction(instruction);
+                    handle_invalid_instruction(instruction); // If no valid funct bits are detected, return error
                     break;                      
             }
         break;
@@ -156,16 +156,24 @@ void write_rtype(Instruction instruction) {
 }
 
 void write_itype_except_load(Instruction instruction) {
-    int immShifted = (instruction.itype.imm >> 5);
-    int imm11_5 = immShifted & ((1U << 7) - 1);
-    int immForSRAIandSRLI = instruction.itype.imm & ((1U << 5) - 1);
+    int immShifted = (instruction.itype.imm >> 5);  
+    int imm11_5 = immShifted & ((1U << 7) - 1); // Use bitmasking to extract immediate bits for slli, srli, and srai instructions
+    int immForSRAIandSRLI = instruction.itype.imm & ((1U << 5) - 1); // Use bitmasking to extract funct7 bits for slli, srli, and srai instructions
     switch (instruction.itype.funct3) {
         case 0x0:
-            print_itype_except_load("addi", instruction, instruction.itype.imm);
+            print_itype_except_load("addi", instruction, instruction.itype.imm); // Use print function to print instruction with desired name
             break;
         
         case 0x1:
-            print_itype_except_load("slli", instruction, instruction.itype.imm);
+            switch (imm11_5) {
+                case 0x00:                
+                    print_itype_except_load("slli", instruction, immForSRAIandSRLI); // Use print function to print instruction with desired name (with shortened immediate section)
+                    break;
+
+                default:
+                    handle_invalid_instruction(instruction);
+            break;  
+            }
             break;
 
         case 0x2:
@@ -185,6 +193,9 @@ void write_itype_except_load(Instruction instruction) {
                 case 0x20:                
                     print_itype_except_load("srai", instruction, immForSRAIandSRLI);
                     break;
+                default:
+                    handle_invalid_instruction(instruction);
+            break;  
             }
             break;
 
@@ -252,12 +263,12 @@ void write_branch(Instruction instruction) {
     }
 }
 
-void print_rtype(char *name, Instruction instruction) {
+void print_rtype(char *name, Instruction instruction) { // Print instruction with desired name and registers
   printf(RTYPE_FORMAT, name, instruction.rtype.rd, instruction.rtype.rs1,
          instruction.rtype.rs2);
 }
 
-void print_itype_except_load(char *name, Instruction instruction, int imm) {
+void print_itype_except_load(char *name, Instruction instruction, int imm) { // Print instruction with desired name, registers, and immediate value
     printf(ITYPE_FORMAT, name, instruction.itype.rd, instruction.itype.rs1, sign_extend_number(imm, 12));
 }
 
@@ -276,7 +287,7 @@ void print_branch(char *name, Instruction instruction) {
 }
 
 void print_lui(Instruction instruction) {
-    //printf(LUI_FORMAT, instruction.utype.rd, instruction.utype.imm);
+    printf(LUI_FORMAT, instruction.utype.rd, instruction.utype.imm);
 }
 
 void print_jal(Instruction instruction) {

@@ -40,8 +40,8 @@ Instruction parse_instruction(uint32_t instruction_bits) {
   // cases for other types of instructions
   //SB-Type
   case 0x63:
-    instruction.sbtype.imm5 = instruction_bits & ((1U << 5) - 1);
-    instruction_bits >>= 5;
+    instruction.sbtype.imm5 = instruction_bits & ((1U << 5) - 1); // Use bitmasking to extract imm5 bits from instruction bits
+    instruction_bits >>= 5; // Shift instruction bits to be able to extract next section
 
     instruction.sbtype.funct3 = instruction_bits & ((1U << 3) - 1);
     instruction_bits >>= 3;
@@ -120,9 +120,9 @@ Instruction parse_instruction(uint32_t instruction_bits) {
 /* Sign extends the given field to a 32-bit integer where field is
  * interpreted an n-bit integer. */
 int sign_extend_number(unsigned int field, unsigned int n) {
-  int shift = 32-n;
-  int extendedNum = field << shift;
-  extendedNum = extendedNum >> shift;
+  int shift = 32-n;    // Determine number of bits to shift to make 32 bit
+  int extendedNum = field << shift;    // Shift the original number by "shift" bits to pad with zeros on right
+  extendedNum = extendedNum >> shift;  // Shift left shifted number by "shift" bits to pad with signed digits on left
   return extendedNum;
 }
 
@@ -130,14 +130,14 @@ int sign_extend_number(unsigned int field, unsigned int n) {
  * the given branch instruction */
 int get_branch_offset(Instruction instruction) {
 
-  int twelve = (instruction.sbtype.imm7 >> 6) & 1U;     
-  int eleven = (instruction.sbtype.imm5 >> 0) & 1U;     
+  int twelve = (instruction.sbtype.imm7 >> 6) & 1U;     // Use bitmasking to extract desired bits
+  int eleven = instruction.sbtype.imm5 & 1U;     
   int ten_to_five = instruction.sbtype.imm7 & 0x3F;         
   int four_to_one = (instruction.sbtype.imm5 >> 1) & 0xF;    
 
-  int offset = (twelve << 12) | (eleven << 11) | (ten_to_five << 5) | (four_to_one << 1);
+  int offset = (twelve << 12) | (eleven << 11) | (ten_to_five << 5) | (four_to_one << 1);  // Use bitwise OR to combine immediate bits
 
-  return sign_extend_number(offset, 13);
+  return sign_extend_number(offset, 13); // Use signed extender function to return 32 bit signed number
 }
 
 /* Returns the number of bytes (from the current PC) to the jump label using the
